@@ -28,8 +28,12 @@ body {
   color: var(--text);
   font-family: Inter, "Segoe UI", Arial, sans-serif;
   background:
-    radial-gradient(ellipse at 50% 40%, rgba(85, 39, 119, .42), transparent 55%),
-    linear-gradient(145deg, #100b16, #08070b 65%, #130b1b);
+  linear-gradient(
+    rgba(9, 7, 13, .55),
+    rgba(9, 7, 13, .78)
+  ),
+  url("assets/images/background.jpg")
+  center / cover no-repeat fixed;
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -116,6 +120,27 @@ h1 { margin: 0; color: var(--purple-bright); font-size: 27px; font-weight: 650; 
   width: 34px; height: 34px; background: rgba(132,77,175,.18);
   color: #f4e9ff; cursor: pointer; font-size: 13px;
 }
+.track select {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+  padding: 5px 7px;
+  color: #e8d5fb;
+  background: #17101f;
+  border: 1px solid rgba(190, 125, 255, .3);
+  border-radius: 6px;
+  font-size: 10px;
+  outline: none;
+}
+
+.track select:focus {
+  border-color: #c99af7;
+}
+
+.track select option {
+  background: #17101f;
+  color: #e8d5fb;
+}
 .play:hover, .link:hover { background: rgba(139,82,190,.35); border-color: #c99af7; transform: translateY(-1px); }
 .volume { width: 65px; accent-color: #bb83ef; cursor: pointer; }
 .links { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
@@ -163,19 +188,48 @@ footer { color: #81718f; font-size: 10px; margin-top: 21px; letter-spacing: .5px
 <div class="wrap">
   <main class="card">
     <div class="status"><span class="dot"></span> PERSONAL PROFILE</div>
-    <div class="avatar" id="avatar">K</div>
+    <div class="avatar" id="avatar">
+  <img
+    src="assets/images/avatar.jpg"
+    alt="Karga profile picture"
+  >
+</div>
     <h1>† ͟ℍ͟єℓєиα ͟✮ ͟𝕂͟αяɠα ͟†</h1>
     <p class="tagline">My art carries the feelings<br>my voice never could.</p>
 
     <section class="music" aria-label="Music player">
-      <div class="disc" id="disc" aria-hidden="true">♫</div>
-      <div class="track">
-        <strong id="trackTitle">No track loaded</strong>
-        <span id="trackArtist">Add your music file to assets/music.mp3</span>
-      </div>
-      <button class="play" id="playBtn" type="button" aria-label="Play music">▶</button>
-      <input class="volume" id="volume" type="range" min="0" max="1" step="0.01" value="0.65" aria-label="Volume">
-    </section>
+  <div class="disc" id="disc" aria-hidden="true">♫</div>
+
+  <div class="track">
+    <strong id="trackTitle">Select a song</strong>
+    <span id="trackArtist">Karga Playlist</span>
+
+    <select id="songSelect" aria-label="Select a song">
+      <option value="0">vämpp - desolate</option>
+      <option value="1">Julia Wolf - Limewire</option>
+      <option value="2">Ally Nicholas - Seventeen</option>
+      <option value="3">Avril Lavigne - Fall To Pieces</option>
+    </select>
+  </div>
+
+  <button
+    class="play"
+    id="playBtn"
+    type="button"
+    aria-label="Play music"
+  >▶</button>
+
+  <input
+    class="volume"
+    id="volume"
+    type="range"
+    min="0"
+    max="1"
+    step="0.01"
+    value="0.65"
+    aria-label="Volume"
+  >
+</section>
 
     <nav class="links" aria-label="Social links">
       <a class="link" href="https://discord.com/" target="_blank" rel="noopener noreferrer">Discord ↗</a>
@@ -186,17 +240,111 @@ footer { color: #81718f; font-size: 10px; margin-top: 21px; letter-spacing: .5px
   </main>
 </div>
 
-<audio id="audio" preload="none" loop>
+<audio id="audio" preload="none"></audio>
   <source src="assets/music.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-const intro = document.getElementById('intro');
-const enterBtn = document.getElementById('enterBtn');
+/* MUSIC PLAYLIST */
+
 const audio = document.getElementById('audio');
 const playBtn = document.getElementById('playBtn');
 const volume = document.getElementById('volume');
 const disc = document.getElementById('disc');
+const trackTitle = document.getElementById('trackTitle');
+const trackArtist = document.getElementById('trackArtist');
+const songSelect = document.getElementById('songSelect');
+
+const playlist = [
+  {
+    title: 'vämpp - desolate',
+    artist: 'vämpp',
+    src: 'assets/music/vämpp - desolate.mp3'
+  },
+  {
+    title: 'Julia Wolf - Limewire',
+    artist: 'Julia Wolf',
+    src: 'assets/music/Julia Wolf - Limewire.mp3'
+  },
+  {
+    title: 'Ally Nicholas - Seventeen',
+    artist: 'Ally Nicholas',
+    src: 'assets/music/Ally Nicholas - Seventeen.mp3'
+  },
+  {
+    title: 'Avril Lavigne - Fall To Pieces',
+    artist: 'Avril Lavigne',
+    src: 'assets/music/Avril Lavigne - Fall To Pieces.mp3'
+  }
+];
+
+let currentSong = 0;
+
+function loadSong(index) {
+  currentSong = index;
+  const song = playlist[index];
+
+  audio.pause();
+  audio.src = song.src;
+  audio.load();
+
+  trackTitle.textContent = song.title;
+  trackArtist.textContent = song.artist;
+  songSelect.value = String(index);
+  setPlaying(false);
+}
+
+function setPlaying(playing) {
+  playBtn.textContent = playing ? 'Ⅱ' : '▶';
+  playBtn.setAttribute(
+    'aria-label',
+    playing ? 'Pause music' : 'Play music'
+  );
+  disc.classList.toggle('playing', playing);
+}
+
+async function playSong() {
+  try {
+    await audio.play();
+  } catch (_) {
+    trackArtist.textContent =
+      'Check your music file';
+  }
+}
+
+playBtn.addEventListener('click', async () => {
+  if (audio.paused) {
+    await playSong();
+  } else {
+    audio.pause();
+  }
+});
+
+songSelect.addEventListener('change', async () => {
+  const index = Number(songSelect.value);
+  loadSong(index);
+  await playSong();
+});
+
+audio.addEventListener('play', () => setPlaying(true));
+audio.addEventListener('pause', () => setPlaying(false));
+
+audio.addEventListener('ended', () => {
+  const next = (currentSong + 1) % playlist.length;
+  loadSong(next);
+  playSong();
+});
+
+audio.addEventListener('error', () => {
+  trackTitle.textContent = 'Unable to load song';
+});
+
+volume.addEventListener('input', () => {
+  audio.volume = Number(volume.value);
+});
+
+audio.volume = Number(volume.value);
+loadSong(0);
 
 enterBtn.addEventListener('click', async () => {
   intro.classList.add('hidden');
