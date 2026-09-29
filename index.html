@@ -338,14 +338,17 @@ audio.addEventListener('ended', () => {
 audio.addEventListener('error', () => {
   trackTitle.textContent = 'Unable to load song';
 });
+const MAX_AUDIO_VOLUME = 0.20;
 
 volume.addEventListener('input', () => {
-  audio.volume = Number(volume.value);
+  audio.volume = Number(volume.value) * MAX_AUDIO_VOLUME;
 });
 
-audio.volume = Number(volume.value);
-loadSong(0);
+volume.value = '1';
+audio.volume = Number(volume.value) * MAX_AUDIO_VOLUME;
 
+loadSong(0);
+  
 enterBtn.addEventListener('click', async () => {
   intro.classList.add('hidden');
   document.body.classList.add('entered');
