@@ -71,7 +71,6 @@ body.entered .card {
   background: linear-gradient(90deg, transparent, #d9b2ff, transparent);
   opacity: .8;
 }
-@keyframes rise { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
 .avatar {
   width: 108px; height: 108px; margin: 2px auto 17px;
   border-radius: 50%;
@@ -201,6 +200,7 @@ const disc = document.getElementById('disc');
 enterBtn.addEventListener('click', async () => {
   intro.classList.add('hidden');
   document.body.classList.add('entered');
+
   try {
     await audio.play();
     setPlaying(true);
