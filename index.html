@@ -241,6 +241,8 @@ footer { color: #81718f; font-size: 10px; margin-top: 21px; letter-spacing: .5px
 </div>
 
 <audio id="audio" preload="none"></audio>
+  <source src="assets/music.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 /* MUSIC PLAYLIST */
@@ -252,8 +254,6 @@ const disc = document.getElementById('disc');
 const trackTitle = document.getElementById('trackTitle');
 const trackArtist = document.getElementById('trackArtist');
 const songSelect = document.getElementById('songSelect');
-const intro = document.getElementById('intro');
-const enterBtn = document.getElementById('enterBtn');
 
 const playlist = [
   {
@@ -348,7 +348,6 @@ loadSong(0);
 
 enterBtn.addEventListener('click', async () => {
   intro.classList.add('hidden');
-  document.body.classList.add('entered');
   try {
     await audio.play();
     setPlaying(true);
@@ -356,6 +355,28 @@ enterBtn.addEventListener('click', async () => {
     // Browsers may block playback until the user presses Play.
   }
 });
+function setPlaying(playing) {
+  playBtn.textContent = playing ? 'Ⅱ' : '▶';
+  playBtn.setAttribute('aria-label', playing ? 'Pause music' : 'Play music');
+  disc.classList.toggle('playing', playing);
+}
+playBtn.addEventListener('click', async () => {
+  if (audio.paused) {
+    try { await audio.play(); } catch (_) {
+      document.getElementById('trackArtist').textContent = 'Add assets/music.mp3 to enable music';
+    }
+  } else {
+    audio.pause();
+  }
+});
+audio.addEventListener('play', () => setPlaying(true));
+audio.addEventListener('pause', () => setPlaying(false));
+audio.addEventListener('error', () => {
+  document.getElementById('trackTitle').textContent = 'No track loaded';
+});
+volume.addEventListener('input', () => { audio.volume = Number(volume.value); });
+audio.volume = Number(volume.value);
+
 // Subtle ambient particles; no external libraries required.
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
